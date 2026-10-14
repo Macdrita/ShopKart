@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --color-offwhite: #F8F5F0;
+  --color-offwhite-surface: #FFFFFF;
+  --color-offwhite-warm: #FCFAF7;
+  --color-beige-light: #F4EDE4;
+  --color-beige: #EBE1D3;
+  --color-beige-dark: #DDD0BF;
+  --color-border: #E6DED4;
+  --color-black: #181513;
+  --color-charcoal: #2A2421;
+  --color-brown-deep: #3D2619;
+  --color-brown-espresso: #4A2E1B;
+  --color-brown: #6F3E22;
+  --color-brown-warm: #8C532B;
+  --color-text-main: #181513;
+  --color-text-muted: #6E6259;
+  --color-text-subtle: #96887D;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #F8F5F0;
+  color: #181513;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #6F3E22 !important;
+  box-shadow: 0 0 0 3px rgba(111, 62, 34, 0.12) !important;
+}
+
