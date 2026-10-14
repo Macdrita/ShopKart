@@ -13,6 +13,7 @@ import Product from "./models/product.model.js";
 
 const app = express();
 const port = 8005;
+let databaseConnection;
 
 const sampleProducts = [
   {
@@ -172,16 +173,29 @@ async function seedInitialProducts() {
 }
 
 async function connectDatabase() {
-  if (!process.env.dbUrl) {
-    throw new Error("dbUrl is missing. Configure a persistent MongoDB connection in backend/.env.");
+  const databaseUrl = process.env.dbUrl || process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error("MongoDB connection is not configured. Set dbUrl or DATABASE_URL.");
   }
 
-  await mongoose.connect(process.env.dbUrl, {
-    dbName: process.env.MONGO_DB_NAME || "shopkart",
-    serverSelectionTimeoutMS: 10000
-  });
-  console.log(`Connected to persistent MongoDB database "${mongoose.connection.name}".`);
-  await seedInitialProducts();
+  if (mongoose.connection.readyState === 1) {
+    return;
+  }
+
+  if (!databaseConnection) {
+    databaseConnection = mongoose.connect(databaseUrl, {
+      dbName: process.env.MONGO_DB_NAME || "shopkart",
+      serverSelectionTimeoutMS: 10000
+    }).then(async () => {
+      console.log(`Connected to persistent MongoDB database "${mongoose.connection.name}".`);
+      await seedInitialProducts();
+    }).catch((error) => {
+      databaseConnection = undefined;
+      throw error;
+    });
+  }
+
+  await databaseConnection;
 }
 
 app.use((req, res, next) => {
@@ -207,6 +221,19 @@ app.get("/", (req, res) => {
   res.json({ message: "ShopKart Customer & Product API Service" });
 });
 
+app.use(async (req, res, next) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (error) {
+    console.error("Database connection failed:", error.message);
+    res.status(503).json({
+      success: false,
+      message: "Service temporarily unavailable because the database is not configured or reachable."
+    });
+  }
+});
+
 app.use("/api/customers", customerRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/wishlist", wishlistRoutes);
@@ -220,7 +247,11 @@ async function startServer() {
   });
 }
 
-startServer().catch((error) => {
-  console.error("Backend startup failed; server was not started:", error.message);
-  process.exitCode = 1;
-});
+export default app;
+
+if (process.env.VERCEL !== "1") {
+  startServer().catch((error) => {
+    console.error("Backend startup failed; server was not started:", error.message);
+    process.exitCode = 1;
+  });
+}

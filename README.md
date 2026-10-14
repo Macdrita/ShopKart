@@ -43,7 +43,7 @@ ShopKart is a full-stack online shopping application built with the MERN stack. 
    RAZORPAY_KEY_SECRET=your-razorpay-key-secret
    ```
 
-   `dbUrl` is required to start the backend. The database name defaults to `shopkart` if `MONGO_DB_NAME` is omitted. Razorpay keys are needed for payment checkout.
+   Set either `dbUrl` or `DATABASE_URL` to your MongoDB connection string. The database name defaults to `shopkart` if `MONGO_DB_NAME` is omitted. Razorpay keys are needed for payment checkout. For Vercel, configure these values as project environment variables; the app can start without a database URL, but API requests that need the database will return a service-unavailable response until it is configured.
 
 3. Install frontend dependencies:
 
