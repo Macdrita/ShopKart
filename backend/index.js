@@ -207,11 +207,11 @@ app.get("/", (req, res) => {
   res.json({ message: "ShopKart Customer & Product API Service" });
 });
 
-app.use("/customers", customerRoutes);
-app.use("/products", productRoutes);
-app.use("/wishlist", wishlistRoutes);
-app.use("/cart", cartRoutes);
-app.use("/orders", orderRoutes);
+app.use("/api/customers", customerRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
 
 async function startServer() {
   await connectDatabase();
