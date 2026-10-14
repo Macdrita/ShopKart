@@ -173,16 +173,22 @@ async function seedInitialProducts() {
 }
 
 async function connectDatabase() {
-  const databaseUrl = process.env.dbUrl || process.env.DATABASE_URL;
+  const databaseUrl = [
+    process.env.DATABASE_URL,
+    process.env.MONGODB_URI,
+    process.env.MONGO_URL,
+    process.env.dbUrl
+  ].find((value) => typeof value === "string" && value.trim())?.trim();
+
   if (!databaseUrl) {
-    throw new Error("MongoDB connection is not configured. Set dbUrl or DATABASE_URL.");
+    throw new Error("MongoDB connection is not configured. Set DATABASE_URL, MONGODB_URI, MONGO_URL, or dbUrl.");
   }
 
   if (mongoose.connection.readyState === 1) {
     return;
   }
 
-  if (!databaseConnection) {
+  if (!databaseConnection || mongoose.connection.readyState !== 2) {
     databaseConnection = mongoose.connect(databaseUrl, {
       dbName: process.env.MONGO_DB_NAME || "shopkart",
       serverSelectionTimeoutMS: 10000
